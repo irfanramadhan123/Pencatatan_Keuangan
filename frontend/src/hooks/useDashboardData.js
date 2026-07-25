@@ -44,19 +44,29 @@ export function useDashboardData() {
     setLoadError("");
 
     try {
-      const [summaryResponse, transactionsResponse] = await Promise.all([
+      const [summaryResponse, transactionsResponse, meResponse] = await Promise.all([
         api.get("/dashboard"),
-        api.get("/transactions"),
+        api.get("/transactions?limit=99999"),
+        api.get("/auth/me").catch(() => null),
       ]);
       setSummary(summaryResponse.data);
-      setAllTransactions(transactionsResponse.data);
+      const txData = transactionsResponse.data;
+      setAllTransactions(Array.isArray(txData) ? txData : (txData.data || []));
+      if (meResponse && meResponse.data) {
+        const dbTarget = Number(meResponse.data.savings_target) || 0;
+        if (dbTarget > 0) {
+          localStorage.setItem("savingsTarget", String(dbTarget));
+        }
+      }
       setLoadError("");
       setLastUpdated(new Date());
     } catch (err) {
       setAllTransactions([]);
       if (err.response) {
         if (err.response.status === 401) {
-          setLoadError("Sesi telah berakhir. Silakan login ulang.");
+          localStorage.removeItem("token");
+          window.location.href = "/login";
+          return;
         } else {
           setLoadError("Terjadi kesalahan pada server. Coba muat ulang.");
         }
@@ -73,7 +83,7 @@ export function useDashboardData() {
   }, []);
 
   useEffect(() => {
-    fetchDashboard();
+    setTimeout(() => fetchDashboard(), 0);
   }, [fetchDashboard]);
 
   useEffect(() => {

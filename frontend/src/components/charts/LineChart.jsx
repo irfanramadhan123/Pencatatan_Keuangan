@@ -22,7 +22,7 @@ function CustomTooltip({ active, payload, label }) {
   );
 }
 
-export default function LineChart({ chartData, period }) {
+export default function LineChart({ chartData }) {
   return (
     <div className="line-chart">
       <ResponsiveContainer width="100%" height={235}>

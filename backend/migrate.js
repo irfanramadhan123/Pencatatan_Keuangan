@@ -9,6 +9,13 @@ async function migrate() {
     await pool.query(`ALTER TABLE categories ADD COLUMN IF NOT EXISTS user_id INTEGER REFERENCES users(id) ON DELETE CASCADE`);
     await pool.query(`ALTER TABLE categories ADD COLUMN IF NOT EXISTS type VARCHAR(20) DEFAULT 'pengeluaran'`);
     await pool.query(`ALTER TABLE categories ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP`);
+
+    // Add google_id to users (for Google-only auth)
+    await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS google_id VARCHAR(255)`);
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_users_google_id ON users(google_id)`);
+
+    // Make password nullable (Google-only users don't have password)
+    await pool.query(`ALTER TABLE users ALTER COLUMN password DROP NOT NULL`);
     
     // Create fund_sources table
     await pool.query(`CREATE TABLE IF NOT EXISTS fund_sources (

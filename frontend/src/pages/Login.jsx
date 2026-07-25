@@ -1,189 +1,132 @@
-import { useState } from "react";
-import api from "../services/api";
+import { useState, useEffect } from "react";
 
 function Login({ onLogin }) {
-  const [mode, setMode] = useState("login");
+  const [theme, setTheme] = useState(
+    () => localStorage.getItem("auth_theme") || "dark"
+  );
+  const [preload, setPreload] = useState(true);
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
-  const [loading, setLoading] = useState(false);
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [username, setUsername] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  useEffect(() => {
+    const t = requestAnimationFrame(() => setPreload(false));
+    return () => cancelAnimationFrame(t);
+  }, []);
 
-  const resetForm = () => {
-    setError("");
-    setSuccess("");
-    setEmail("");
-    setPassword("");
-    setUsername("");
-    setConfirmPassword("");
-  };
-
-  const switchMode = (newMode) => {
-    setMode(newMode);
-    resetForm();
-  };
-
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    setError("");
-    setLoading(true);
-    try {
-      const response = await api.post("/auth/login", { email, password });
-      localStorage.setItem("token", response.data.token);
-      onLogin(response.data.token);
-    } catch (err) {
-      setError(err.response?.data?.message || "Login gagal! Periksa email dan password.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleRegister = async (e) => {
-    e.preventDefault();
-    setError("");
-    if (password !== confirmPassword) {
-      setError("Konfirmasi password tidak cocok.");
+  // Ambil token dari URL (?token=...) setelah Google redirect
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get("token");
+    if (token) {
+      localStorage.setItem("token", token);
+      params.delete("token");
+      const clean = `${window.location.pathname}${
+        params.toString() ? "?" + params.toString() : ""
+      }`;
+      window.history.replaceState({}, document.title, clean);
+      onLogin(token);
       return;
     }
-    if (password.length < 6) {
-      setError("Password minimal 6 karakter.");
-      return;
-    }
-    setLoading(true);
-    try {
-      await api.post("/auth/register", { username, email, password });
-      setSuccess("Akun berhasil dibuat! Silakan masuk.");
-      switchMode("login");
-    } catch (err) {
-      setError(err.response?.data?.message || "Registrasi gagal.");
-    } finally {
-      setLoading(false);
-    }
+    const err = params.get("error");
+    if (err) setTimeout(() => setError("Gagal masuk dengan Google. Coba lagi."), 0);
+  }, [onLogin]);
+
+  const toggleTheme = () => {
+    const next = theme === "dark" ? "light" : "dark";
+    setTheme(next);
+    localStorage.setItem("auth_theme", next);
   };
 
-  const handleForgot = async (e) => {
-    e.preventDefault();
-    setError("");
-    if (password !== confirmPassword) {
-      setError("Konfirmasi password tidak cocok.");
-      return;
-    }
-    if (password.length < 6) {
-      setError("Password minimal 6 karakter.");
-      return;
-    }
-    setLoading(true);
-    try {
-      await api.put("/auth/forgot-password", { email, newPassword: password });
-      setSuccess("Password berhasil direset! Silakan masuk.");
-      switchMode("login");
-    } catch (err) {
-      setError(err.response?.data?.message || "Gagal mereset password.");
-    } finally {
-      setLoading(false);
-    }
+  const handleGoogle = () => {
+    window.location.href = "http://localhost:5000/api/auth/google";
   };
+
+  const authCardClass = `auth-card theme-${theme}${
+    preload ? " preload" : ""
+  }`;
 
   return (
     <div className="login-page">
-      <div className="login-card">
-        <div className="login-header">
-          <div className="login-brand">
-            <strong>Uangku</strong>
+      <div className={authCardClass}>
+        <button
+          type="button"
+          className="theme-toggle"
+          onClick={toggleTheme}
+          aria-label="Ganti tema"
+          title={theme === "dark" ? "Mode terang" : "Mode gelap"}
+        >
+          {theme === "dark" ? "☀️" : "🌙"}
+        </button>
+
+        {/* Panel kiri - login Google */}
+        <section className="auth-left">
+          <div className="auth-brand">
+            <span className="auth-logo-dot" />
+            <span className="logo">
+              <span className="candy">Uangku</span>
+            </span>
           </div>
-          <h1>{mode === "login" ? "Masuk ke Akun" : mode === "register" ? "Buat Akun Baru" : "Reset Password"}</h1>
-          <p>
-            {mode === "login"
-              ? "Kelola keuangan pribadi dengan mudah dan terorganisir."
-              : mode === "register"
-                ? "Daftar untuk mulai mencatat keuangan."
-                : "Masukkan email dan password baru."}
-          </p>
-        </div>
 
-        {error && <div className="login-error">{error}</div>}
-        {success && <div className="login-success">{success}</div>}
+          <div className="auth-left-body">
+            <h1 className="auth-title">Masuk ke Akun</h1>
+            <p className="auth-subtitle">
+              Kelola keuangan pribadi dengan mudah dan terorganisir.
+            </p>
 
-        {mode === "register" && (
-          <form className="login-form" onSubmit={handleRegister}>
-            <label>
-              Nama
-              <input type="text" placeholder="Nama lengkap" value={username} onChange={(e) => setUsername(e.target.value)} required />
-            </label>
-            <label>
-              Email
-              <input type="email" placeholder="contoh@email.com" value={email} onChange={(e) => setEmail(e.target.value)} required />
-            </label>
-            <label>
-              Password
-              <input type="password" placeholder="Minimal 6 karakter" value={password} onChange={(e) => setPassword(e.target.value)} required />
-            </label>
-            <label>
-              Konfirmasi Password
-              <input type="password" placeholder="Ulangi password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required />
-            </label>
-            <button className="login-button" type="submit" disabled={loading}>
-              {loading ? "Memproses..." : "Daftar"}
-            </button>
-            <button className="link-button back-link" type="button" onClick={() => switchMode("login")}>
-              &larr; Kembali ke Login
-            </button>
-          </form>
-        )}
+            {error && <div className="login-error">{error}</div>}
 
-        {mode === "forgot" && (
-          <form className="login-form" onSubmit={handleForgot}>
-            <label>
-              Email
-              <input type="email" placeholder="contoh@email.com" value={email} onChange={(e) => setEmail(e.target.value)} required />
-            </label>
-            <label>
-              Password Baru
-              <input type="password" placeholder="Minimal 6 karakter" value={password} onChange={(e) => setPassword(e.target.value)} required />
-            </label>
-            <label>
-              Konfirmasi Password Baru
-              <input type="password" placeholder="Ulangi password baru" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required />
-            </label>
-            <button className="login-button" type="submit" disabled={loading}>
-              {loading ? "Memproses..." : "Reset Password"}
+            <button
+              type="button"
+              className="google-button"
+              onClick={handleGoogle}
+            >
+              <span className="google-icon" aria-hidden="true">
+                <svg viewBox="0 0 48 48" width="20" height="20">
+                  <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+                  <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+                  <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+                  <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+                </svg>
+              </span>
+              Masuk dengan Google
             </button>
-            <button className="link-button back-link" type="button" onClick={() => switchMode("login")}>
-              &larr; Kembali ke Login
-            </button>
-          </form>
-        )}
+          </div>
 
-        {mode === "login" && (
-          <form className="login-form" onSubmit={handleLogin}>
-            <label>
-              Email
-              <input type="email" placeholder="contoh@email.com" value={email} onChange={(e) => setEmail(e.target.value)} required />
-            </label>
-            <label>
-              Password
-              <input type="password" placeholder="Masukkan password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-            </label>
-            <button className="login-button" type="submit" disabled={loading}>
-              {loading ? "Memproses..." : "Masuk"}
-            </button>
-            <div className="login-links">
-              <button className="link-button" type="button" onClick={() => switchMode("register")}>
-                Belum punya akun? <strong>Daftar</strong>
-              </button>
-              <button className="link-button" type="button" onClick={() => switchMode("forgot")}>
-                Lupa password?
-              </button>
+          <div className="auth-footer">
+            <span>Pencatatan Keuangan &copy; 2026</span>
+          </div>
+        </section>
+
+        {/* Panel kanan - penjelasan Uangku */}
+        <aside className="auth-right">
+          <div className="auth-right-inner">
+            <h2 className="auth-right-title">Kelola uang, raih tenang.</h2>
+            <p className="auth-right-desc">
+              Uangku membantu kamu mencatat setiap rupiah, memantau saldo secara
+              real-time, dan mencapai target tabungan dengan lebih disiplin.
+            </p>
+            <ul className="auth-features">
+              <li>📊 Pantau saldo &amp; transaksi real-time</li>
+              <li>🎯 Atur target tabungan &amp; anggaran</li>
+              <li>🔒 Data keuangan aman di satu tempat</li>
+            </ul>
+
+            <div className="auth-illustration">
+              <div className="auth-avatar">💰</div>
+              <div className="float-card card-balance">
+                <span className="fc-label">Saldo</span>
+                <span className="fc-value">Rp 12.450.000</span>
+              </div>
+              <div className="float-card card-income">
+                <span className="fc-label">Pemasukan</span>
+                <span className="fc-value up">+ Rp 4.200.000</span>
+              </div>
+              <div className="float-card card-expense">
+                <span className="fc-label">Pengeluaran</span>
+                <span className="fc-value down">- Rp 1.800.000</span>
+              </div>
             </div>
-          </form>
-        )}
-
-        <div className="login-footer">
-          <span>Pencatatan Keuangan &copy; 2026</span>
-        </div>
+          </div>
+        </aside>
       </div>
     </div>
   );

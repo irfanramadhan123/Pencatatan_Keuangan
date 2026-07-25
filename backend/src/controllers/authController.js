@@ -1,6 +1,13 @@
 const pool = require("../config/db");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const { OAuth2Client } = require("google-auth-library");
+
+const googleClient = new OAuth2Client(
+  process.env.GOOGLE_CLIENT_ID,
+  process.env.GOOGLE_CLIENT_SECRET,
+  process.env.GOOGLE_CALLBACK_URL
+);
 
 // REGISTER
 const register = async (req, res) => {
@@ -102,7 +109,7 @@ const login = async (req, res) => {
 const getMe = async (req, res) => {
   try {
     const result = await pool.query(
-      "SELECT id, username, email FROM users WHERE id = $1",
+      "SELECT id, username, email, savings_target, currency, timezone FROM users WHERE id = $1",
       [req.user.id]
     );
 
@@ -124,7 +131,7 @@ const getMe = async (req, res) => {
 
 const updateMe = async (req, res) => {
   try {
-    const { username, email } = req.body;
+    const { username, email, savings_target, currency, timezone } = req.body;
 
     const existingUser = await pool.query(
       "SELECT id FROM users WHERE email = $1 AND id <> $2",
@@ -141,11 +148,14 @@ const updateMe = async (req, res) => {
       `
       UPDATE users
       SET username = $1,
-          email = $2
-      WHERE id = $3
-      RETURNING id, username, email
+          email = $2,
+          savings_target = COALESCE($3, savings_target),
+          currency = COALESCE($4, currency),
+          timezone = COALESCE($5, timezone)
+      WHERE id = $6
+      RETURNING id, username, email, savings_target, currency, timezone
       `,
-      [username, email, req.user.id]
+      [username, email, savings_target, currency, timezone, req.user.id]
     );
 
     res.json({
@@ -186,10 +196,92 @@ const forgotPassword = async (req, res) => {
   }
 };
 
+// GOOGLE AUTH - mulai flow (redirect ke Google)
+const googleAuth = async (req, res) => {
+  const url = googleClient.generateAuthUrl({
+    access_type: "offline",
+    prompt: "consent",
+    scope: ["openid", "email", "profile"],
+  });
+  res.redirect(url);
+};
+
+// GOOGLE AUTH - callback dari Google
+const googleCallback = async (req, res) => {
+  try {
+    const { code } = req.query;
+    if (!code) {
+      return res.redirect("http://localhost:5173/login?error=google_no_code");
+    }
+
+    const { tokens } = await googleClient.getToken(code);
+    googleClient.setCredentials(tokens);
+
+    const ticket = await googleClient.verifyIdToken({
+      idToken: tokens.id_token,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+    const payload = ticket.getPayload();
+
+    if (!payload || !payload.email || !payload.email_verified) {
+      return res.redirect("http://localhost:5173/login?error=google_unverified");
+    }
+
+    const email = payload.email;
+    const name = payload.name || email.split("@")[0];
+
+    // Cari user by email (menyambungkan akun existing)
+    let userResult = await pool.query("SELECT * FROM users WHERE email = $1", [email]);
+
+    let user;
+    if (userResult.rows.length > 0) {
+      user = userResult.rows[0];
+      // tandai sebagai akun Google bila belum
+      if (!user.google_id) {
+        await pool.query("UPDATE users SET google_id = $1 WHERE id = $2", [
+          payload.sub,
+          user.id,
+        ]);
+      }
+    } else {
+      const insert = await pool.query(
+        `INSERT INTO users (username, email, google_id)
+         VALUES ($1, $2, $3)
+         RETURNING id, username, email`,
+        [name, email, payload.sub]
+      );
+      user = insert.rows[0];
+    }
+
+    const token = jwt.sign(
+      { id: user.id, email: user.email },
+      process.env.JWT_SECRET,
+      { expiresIn: "1d" }
+    );
+
+    // Redirect balik ke frontend bawa token (frontend akan simpan & hapus dari URL)
+    return res.redirect(`http://localhost:5173/login?token=${token}`);
+  } catch (error) {
+    console.error("Google callback error:", error.message);
+    return res.redirect("http://localhost:5173/login?error=google_failed");
+  }
+};
+
+// DELETE akun + semua data terkait (cascade)
+const deleteAccount = async (req, res) => {
+  try {
+    await pool.query("DELETE FROM users WHERE id = $1", [req.user.id]);
+    res.json({ message: "Akun berhasil dihapus" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Gagal menghapus akun" });
+  }
+};
+
 module.exports = {
-  register,
-  login,
   getMe,
   updateMe,
-  forgotPassword,
+  googleAuth,
+  googleCallback,
+  deleteAccount,
 };

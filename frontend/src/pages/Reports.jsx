@@ -1,15 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import api from "../services/api";
+import { formatCurrency } from "../utils/format";
 
 const reportTabs = ["Semua", "Bulanan", "Kuartal", "Tahunan"];
-
-function formatCurrency(value) {
-  return new Intl.NumberFormat("id-ID", {
-    style: "currency",
-    currency: "IDR",
-    maximumFractionDigits: 0,
-  }).format(Number(value || 0));
-}
 
 function formatDate(value) {
   return new Intl.DateTimeFormat("id-ID", {
@@ -92,10 +85,11 @@ function Reports() {
 
   useEffect(() => {
     let shouldUpdate = true;
-    api.get("/transactions")
+    api.get("/transactions?limit=99999")
       .then((response) => {
         if (!shouldUpdate) return;
-        setTransactions(response.data);
+        const txData = response.data;
+        setTransactions(Array.isArray(txData) ? txData : (txData.data || []));
         setLoadError("");
       })
       .catch(() => {
@@ -136,7 +130,7 @@ function Reports() {
         </div>
         <div className="report-actions">
           <label className="search-box" style={{ width: '220px' }}>
-            <span />
+            <span className="search-icon" />
             <input
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Cari laporan..."
@@ -192,7 +186,7 @@ function Reports() {
                 <span className="expense-line-chip">{formatCurrency(report.expense)}</span>
               </div>
               <mark className={report.status === "Selesai" ? "income" : "expense"}>{report.status}</mark>
-              <button className="download-button" onClick={() => downloadReport(report)} type="button">
+              <button className="download-button report-row-actions" onClick={() => downloadReport(report)} type="button">
                 Download CSV
               </button>
             </article>

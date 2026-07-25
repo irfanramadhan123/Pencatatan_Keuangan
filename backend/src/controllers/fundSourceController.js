@@ -83,8 +83,28 @@ const deleteFundSource = async (req, res) => {
   }
 };
 
+// UPDATE sumber dana
+const updateFundSource = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name } = req.body;
+    const result = await pool.query(
+      `UPDATE fund_sources SET name = $1 WHERE id = $2 AND user_id = $3 RETURNING *`,
+      [name, id, req.user.id]
+    );
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: "Sumber dana tidak ditemukan" });
+    }
+    res.json({ message: "Sumber dana berhasil diupdate", fund_source: result.rows[0] });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Gagal mengupdate sumber dana" });
+  }
+};
+
 module.exports = {
   getFundSources,
   createFundSource,
+  updateFundSource,
   deleteFundSource,
 };

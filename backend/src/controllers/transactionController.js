@@ -1,33 +1,45 @@
 const pool = require("../config/db");
 
-// GET semua transaksi user
+// GET transaksi user dengan pagination
 const getTransactions = async (req, res) => {
   try {
-    const { type } = req.query;
-    let query = `
+    const { type, page = 1, limit = 50 } = req.query;
+    const offset = (Math.max(1, Number(page)) - 1) * Number(limit);
+    const pageLimit = Math.min(Math.max(1, Number(limit)), 200);
+
+    let where = "WHERE t.user_id = $1";
+    const params = [req.user.id];
+
+    if (type) {
+      params.push(type);
+      where += ` AND t.type = $${params.length}`;
+    }
+
+    // Count total
+    const countResult = await pool.query(
+      `SELECT COUNT(*) FROM transactions t ${where}`,
+      params
+    );
+    const total = parseInt(countResult.rows[0].count, 10);
+
+    // Fetch page
+    params.push(pageLimit, offset);
+    const query = `
       SELECT
         t.*,
         c.name AS category_name,
         fs.name AS fund_source_name
       FROM transactions t
-      JOIN categories c
-        ON t.category_id = c.id
-      LEFT JOIN fund_sources fs
-        ON t.fund_source_id = fs.id
-      WHERE t.user_id = $1
+      JOIN categories c ON t.category_id = c.id
+      LEFT JOIN fund_sources fs ON t.fund_source_id = fs.id
+      ${where}
+      ORDER BY t.transaction_date DESC
+      LIMIT $${params.length - 1} OFFSET $${params.length}
     `;
-    const params = [req.user.id];
-
-    if (type) {
-      params.push(type);
-      query += ` AND t.type = $${params.length}`;
-    }
-
-    query += ` ORDER BY t.transaction_date DESC`;
 
     const result = await pool.query(query, params);
 
-    res.json(result.rows);
+    res.json({ data: result.rows, total, page: Math.max(1, Number(page)), limit: pageLimit });
   } catch (error) {
     console.error(error);
 
@@ -48,6 +60,18 @@ const createTransaction = async (req, res) => {
       transaction_date,
       fund_source_id,
     } = req.body;
+
+    if (!category_id || !["pemasukan", "pengeluaran"].includes(type) || !Number.isFinite(Number(amount)) || Number(amount) <= 0 || !transaction_date) {
+      return res.status(400).json({ message: "Data transaksi belum lengkap atau nominal tidak valid" });
+    }
+
+    const category = await pool.query(
+      "SELECT id FROM categories WHERE id = $1 AND user_id = $2 AND type = $3",
+      [category_id, req.user.id, type]
+    );
+    if (category.rows.length === 0) {
+      return res.status(400).json({ message: "Pilih kategori yang sesuai dengan jenis transaksi" });
+    }
 
     const result = await pool.query(
       `

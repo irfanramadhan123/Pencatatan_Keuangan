@@ -7,7 +7,11 @@ CREATE TABLE IF NOT EXISTS users (
   id SERIAL PRIMARY KEY,
   username VARCHAR(100) NOT NULL,
   email VARCHAR(255) UNIQUE NOT NULL,
-  password VARCHAR(255) NOT NULL,
+  password VARCHAR(255),
+  google_id VARCHAR(255),
+  savings_target NUMERIC DEFAULT 0,
+  currency VARCHAR(10) DEFAULT 'IDR',
+  timezone VARCHAR(50) DEFAULT 'Asia/Jakarta',
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -77,6 +81,10 @@ ALTER TABLE categories ADD COLUMN IF NOT EXISTS user_id INTEGER REFERENCES users
 ALTER TABLE categories ADD COLUMN IF NOT EXISTS type VARCHAR(20) DEFAULT 'pengeluaran';
 ALTER TABLE categories ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
 ALTER TABLE transactions ADD COLUMN IF NOT EXISTS fund_source_id INTEGER REFERENCES fund_sources(id) ON DELETE SET NULL;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS savings_target NUMERIC DEFAULT 0;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS currency VARCHAR(10) DEFAULT 'IDR';
+ALTER TABLE users ADD COLUMN IF NOT EXISTS timezone VARCHAR(50) DEFAULT 'Asia/Jakarta';
+ALTER TABLE users ADD COLUMN IF NOT EXISTS google_id VARCHAR(255);
 
 -- Indexes
 CREATE INDEX IF NOT EXISTS idx_categories_user_id ON categories(user_id);
@@ -85,3 +93,4 @@ CREATE INDEX IF NOT EXISTS idx_transactions_type ON transactions(type);
 CREATE INDEX IF NOT EXISTS idx_fund_sources_user_id ON fund_sources(user_id);
 CREATE INDEX IF NOT EXISTS idx_savings_user_id ON savings(user_id);
 CREATE INDEX IF NOT EXISTS idx_budgets_user_id ON budgets(user_id);
+CREATE INDEX IF NOT EXISTS idx_users_google_id ON users(google_id);

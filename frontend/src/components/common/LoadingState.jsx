@@ -18,13 +18,33 @@ export default function LoadingState() {
         ))}
       </section>
       <section className="content-grid">
-        <article className="panel wide">
+        <article className="panel wide skeleton-card">
           <div className="skeleton-line skeleton-md" />
           <div className="skeleton-line skeleton-chart-full" style={{ marginTop: 20 }} />
         </article>
-        <article className="panel">
+        <article className="panel skeleton-card">
           <div className="skeleton-line skeleton-md" />
           <div className="skeleton-circle" style={{ marginTop: 20 }} />
+        </article>
+        <article className="panel wide skeleton-card">
+          <div className="skeleton-line skeleton-md" />
+          {[1, 2, 3, 4].map((i) => (
+            <div
+              key={i}
+              className="skeleton-line"
+              style={{ height: 44, marginTop: i === 1 ? 20 : 12, borderRadius: 8 }}
+            />
+          ))}
+        </article>
+        <article className="panel skeleton-card">
+          <div className="skeleton-line skeleton-md" />
+          {[1, 2, 3].map((i) => (
+            <div
+              key={i}
+              className="skeleton-line"
+              style={{ height: 38, marginTop: i === 1 ? 20 : 12, borderRadius: 8 }}
+            />
+          ))}
         </article>
       </section>
     </>

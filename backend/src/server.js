@@ -7,6 +7,8 @@ const categoryRoutes = require("./routes/categoryRoutes");
 const transactionRoutes = require("./routes/transactionRoutes");
 const dashboardRoutes = require("./routes/dashboardRoutes");
 const fundSourceRoutes = require("./routes/fundSourceRoutes");
+const savingRoutes = require("./routes/savingRoutes");
+const budgetRoutes = require("./routes/budgetRoutes");
 
 const app = express();
 
@@ -18,6 +20,8 @@ app.use("/api/auth", authRoutes);
 app.use("/api/categories", categoryRoutes);
 app.use("/api/transactions", transactionRoutes);
 app.use("/api/fund-sources", fundSourceRoutes);
+app.use("/api/savings", savingRoutes);
+app.use("/api/budgets", budgetRoutes);
 app.get("/", (req, res) => {
   res.send("API berjalan");
 });

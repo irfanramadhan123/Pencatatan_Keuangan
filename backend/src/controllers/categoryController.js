@@ -1,16 +1,22 @@
 const pool = require("../config/db");
 
-// GET semua kategori milik user
+// GET semua kategori milik user + budget bulan berjalan
 const getCategories = async (req, res) => {
   try {
+    const now = new Date();
+    const currentPeriod = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
     const result = await pool.query(
       `
-      SELECT *
-      FROM categories
-      WHERE user_id = $1
-      ORDER BY id
+      SELECT c.*, COALESCE(b.amount, 0) AS budget
+      FROM categories c
+      LEFT JOIN budgets b
+        ON b.category_id = c.id
+        AND b.period = $2
+        AND b.user_id = c.user_id
+      WHERE c.user_id = $1
+      ORDER BY c.id
       `,
-      [req.user.id]
+      [req.user.id, currentPeriod]
     );
 
     res.json(result.rows);

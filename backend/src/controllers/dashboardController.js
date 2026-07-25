@@ -2,46 +2,26 @@ const pool = require("../config/db");
 
 const getDashboardSummary = async (req, res) => {
   try {
-
-    console.log("REQ USER:", req.user);
-
-    const pemasukan = await pool.query(
+    const result = await pool.query(
       `
-      SELECT COALESCE(SUM(amount), 0) AS total
+      SELECT
+        COALESCE(SUM(amount) FILTER (WHERE type = 'pemasukan'), 0) AS total_pemasukan,
+        COALESCE(SUM(amount) FILTER (WHERE type = 'pengeluaran'), 0) AS total_pengeluaran
       FROM transactions
       WHERE user_id = $1
-      AND type = 'pemasukan'
       `,
       [req.user.id]
     );
 
-    const pengeluaran = await pool.query(
-      `
-      SELECT COALESCE(SUM(amount), 0) AS total
-      FROM transactions
-      WHERE user_id = $1
-      AND type = 'pengeluaran'
-      `,
-      [req.user.id]
-    );
-
-    const totalPemasukan = Number(
-      pemasukan.rows[0].total
-    );
-
-    const totalPengeluaran = Number(
-      pengeluaran.rows[0].total
-    );
-
-    const saldo =
-      totalPemasukan - totalPengeluaran;
+    const totalPemasukan = Number(result.rows[0].total_pemasukan);
+    const totalPengeluaran = Number(result.rows[0].total_pengeluaran);
+    const saldo = totalPemasukan - totalPengeluaran;
 
     res.json({
       totalPemasukan,
       totalPengeluaran,
       saldo,
     });
-
   } catch (error) {
     console.error(error);
 

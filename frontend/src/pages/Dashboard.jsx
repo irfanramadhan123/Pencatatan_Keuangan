@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Wallet, ArrowUpRight, ArrowDownRight, Plus } from "lucide-react";
-import { formatCurrency } from "../utils/format";
 import {
   useDashboardData,
   periods,

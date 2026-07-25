@@ -1,15 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import api from "../services/api";
+import { formatCurrency } from "../utils/format";
 
 const colorClasses = ["blue", "pink", "green", "orange", "violet", "slate"];
-
-function formatCurrency(value) {
-  return new Intl.NumberFormat("id-ID", {
-    style: "currency",
-    currency: "IDR",
-    maximumFractionDigits: 0,
-  }).format(Number(value || 0));
-}
 
 function Categories() {
   const [categories, setCategories] = useState([]);
@@ -24,11 +17,12 @@ function Categories() {
   const getCategoryData = async () => {
     const [categoriesResponse, transactionsResponse] = await Promise.all([
       api.get("/categories"),
-      api.get("/transactions"),
+      api.get("/transactions?limit=99999"),
     ]);
+    const txData = transactionsResponse.data;
     return {
       categories: categoriesResponse.data,
-      transactions: transactionsResponse.data,
+      transactions: Array.isArray(txData) ? txData : (txData.data || []),
     };
   };
 
@@ -107,7 +101,7 @@ function Categories() {
         </div>
         <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
           <label className="search-box" style={{ width: '220px' }}>
-            <span />
+            <span className="search-icon" />
             <input
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Cari kategori..."

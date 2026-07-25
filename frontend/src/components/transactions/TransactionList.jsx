@@ -1,10 +1,8 @@
-import { useNavigate } from "react-router-dom";
 import { ArrowUpRight, ArrowDownRight } from "lucide-react";
 import { formatCurrency, formatDate } from "../../utils/format";
 import EmptyState from "../common/EmptyState";
 
 export default function TransactionList({ transactions, onEmptyAction }) {
-  const navigate = useNavigate();
 
   if (transactions.length === 0) {
     return (
