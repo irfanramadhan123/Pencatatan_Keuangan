@@ -37,7 +37,7 @@ function Login({ onLogin }) {
   };
 
   const handleGoogle = () => {
-    window.location.href = "http://localhost:5000/api/auth/google";
+    window.location.href = "/api/auth/google";
   };
 
   const authCardClass = `auth-card theme-${theme}${

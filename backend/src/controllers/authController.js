@@ -211,7 +211,7 @@ const googleCallback = async (req, res) => {
   try {
     const { code } = req.query;
     if (!code) {
-      return res.redirect("http://localhost:5173/login?error=google_no_code");
+      return res.redirect("https://uangku.eithez.my.id/login?error=google_no_code");
     }
 
     const { tokens } = await googleClient.getToken(code);
@@ -224,7 +224,7 @@ const googleCallback = async (req, res) => {
     const payload = ticket.getPayload();
 
     if (!payload || !payload.email || !payload.email_verified) {
-      return res.redirect("http://localhost:5173/login?error=google_unverified");
+      return res.redirect("https://uangku.eithez.my.id/login?error=google_unverified");
     }
 
     const email = payload.email;
@@ -260,10 +260,10 @@ const googleCallback = async (req, res) => {
     );
 
     // Redirect balik ke frontend bawa token (frontend akan simpan & hapus dari URL)
-    return res.redirect(`http://localhost:5173/login?token=${token}`);
+    return res.redirect(`https://uangku.eithez.my.id/login?token=${token}`);
   } catch (error) {
     console.error("Google callback error:", error.message);
-    return res.redirect("http://localhost:5173/login?error=google_failed");
+    return res.redirect("https://uangku.eithez.my.id/login?error=google_failed");
   }
 };
 
@@ -279,6 +279,9 @@ const deleteAccount = async (req, res) => {
 };
 
 module.exports = {
+  register,
+  login,
+  forgotPassword,
   getMe,
   updateMe,
   googleAuth,

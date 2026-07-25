@@ -108,7 +108,7 @@ export function useDashboardData() {
         break;
       case "1tahun":
       default:
-        cutoff = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate());
+        cutoff = new Date(0);
         break;
     }
     let totalPemasukan = 0;
