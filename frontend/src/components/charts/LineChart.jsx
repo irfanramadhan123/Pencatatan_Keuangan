@@ -29,8 +29,8 @@ export default function LineChart({ chartData }) {
         <AreaChart data={chartData} margin={{ top: 8, right: 8, left: -16, bottom: 4 }}>
           <defs>
             <linearGradient id="cashflowGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#8b5cf6" stopOpacity={0.6} />
-              <stop offset="100%" stopColor="#8b5cf6" stopOpacity={0} />
+              <stop offset="0%" stopColor="#10b981" stopOpacity={0.6} />
+              <stop offset="100%" stopColor="#10b981" stopOpacity={0} />
             </linearGradient>
           </defs>
           <CartesianGrid strokeDasharray="3 3" stroke="rgba(148,163,184,0.2)" />
@@ -47,16 +47,16 @@ export default function LineChart({ chartData }) {
             tick={{ fill: "#94a3b8", fontSize: 11 }}
             tickFormatter={(v) => v >= 1000000 ? `${(v / 1000000).toFixed(1)}jt` : v >= 1000 ? `${(v / 1000).toFixed(0)}rb` : v}
           />
-          <Tooltip content={<CustomTooltip />} cursor={{ stroke: "#8b5cf6", strokeWidth: 1, strokeDasharray: "3 3" }} />
+          <Tooltip content={<CustomTooltip />} cursor={{ stroke: "#10b981", strokeWidth: 1, strokeDasharray: "3 3" }} />
           <Area
             type="monotone"
             dataKey="value"
-            stroke="#8b5cf6"
+            stroke="#10b981"
             fill="url(#cashflowGrad)"
             strokeWidth={3}
             connectNulls={true}
             dot={false}
-            activeDot={{ r: 4, fill: "#8b5cf6", stroke: "#fff", strokeWidth: 2 }}
+            activeDot={{ r: 4, fill: "#10b981", stroke: "#fff", strokeWidth: 2 }}
           />
         </AreaChart>
       </ResponsiveContainer>

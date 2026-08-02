@@ -2,7 +2,9 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import Layout from "./components/Layout";
 import api from "./services/api";
+import Landing from "./pages/Landing";
 import Login from "./pages/Login";
+import NotFound from "./pages/NotFound";
 import Dashboard from "./pages/Dashboard";
 import Transactions from "./pages/Transactions";
 import Categories from "./pages/Categories";
@@ -42,41 +44,35 @@ function App() {
     return null;
   }
 
-  if (!token) {
-    return (
-      <BrowserRouter>
-        <Routes>
-          <Route path="/login" element={<Login onLogin={setToken} />} />
-          <Route path="*" element={<Navigate to="/login" replace />} />
-        </Routes>
-      </BrowserRouter>
-    );
-  }
+  const appPage = (element) => (
+    <ProtectedRoute>
+      <Layout>{element}</Layout>
+    </ProtectedRoute>
+  );
 
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/login" element={<Navigate to="/" replace />} />
+        <Route path="/" element={<Landing loggedIn={!!token} />} />
         <Route
-          path="/*"
+          path="/login"
           element={
-            <ProtectedRoute>
-              <Layout>
-                <Routes>
-                  <Route path="/" element={<Dashboard />} />
-                  <Route path="/transaksi" element={<Transactions />} />
-                  <Route path="/kategori" element={<Categories />} />
-                  <Route path="/sumber-dana" element={<FundSources />} />
-                  <Route path="/tabungan" element={<Savings />} />
-                  <Route path="/anggaran" element={<Budgets />} />
-                  <Route path="/laporan" element={<Reports />} />
-                  <Route path="/pengaturan" element={<Settings />} />
-                  <Route path="*" element={<Navigate to="/" replace />} />
-                </Routes>
-              </Layout>
-            </ProtectedRoute>
+            token ? (
+              <Navigate to="/dashboard" replace />
+            ) : (
+              <Login onLogin={setToken} />
+            )
           }
         />
+        <Route path="/dashboard" element={appPage(<Dashboard />)} />
+        <Route path="/transaksi" element={appPage(<Transactions />)} />
+        <Route path="/kategori" element={appPage(<Categories />)} />
+        <Route path="/sumber-dana" element={appPage(<FundSources />)} />
+        <Route path="/tabungan" element={appPage(<Savings />)} />
+        <Route path="/anggaran" element={appPage(<Budgets />)} />
+        <Route path="/laporan" element={appPage(<Reports />)} />
+        <Route path="/pengaturan" element={appPage(<Settings />)} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
   );
