@@ -2,7 +2,7 @@ import { useRef, useState } from "react";
 import { ChevronDown } from "lucide-react";
 import { formatCurrency } from "../../utils/format";
 
-const pieColors = ["#f5f3ff", "#ede9fe", "#ddd6fe", "#c4b5fd", "#a78bfa", "#8b5cf6", "#7c3aed", "#6d28d9", "#5b21b6", "#4c1d95", "#3b0764", "#2e1065", "#1e0a3c"];
+const pieColors = ["#10b981", "#3b82f6", "#8b5cf6", "#f59e0b", "#ec4899", "#06b6d4", "#10b981", "#3b82f6", "#8b5cf6", "#f59e0b", "#ec4899", "#06b6d4", "#10b981"];
 const getColor = (i) => pieColors[i % pieColors.length];
 
 export default function DonutChart({ categoryData, categoryTotal, hasData }) {

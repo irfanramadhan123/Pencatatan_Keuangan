@@ -5,7 +5,7 @@ import { LayoutDashboard, ArrowRightLeft, FolderOpen, Wallet, PiggyBank, ChartNo
 import { formatCurrency } from "../utils/format";
 
 const navItems = [
-  { label: "Dashboard", icon: LayoutDashboard, path: "/" },
+  { label: "Dashboard", icon: LayoutDashboard, path: "/dashboard" },
   { label: "Transaksi", icon: ArrowRightLeft, path: "/transaksi" },
   { label: "Kategori", icon: FolderOpen, path: "/kategori" },
   { label: "Sumber Dana", icon: Wallet, path: "/sumber-dana" },
@@ -177,7 +177,7 @@ function Layout({ children }) {
             <button className="hamburger" onClick={() => setSidebarOpen(true)} type="button" aria-label="Buka menu">
               <Menu size={20} strokeWidth={2.5} />
             </button>
-            <Link to="/" className="topbar-brand">
+            <Link to="/dashboard" className="topbar-brand">
               <strong>Uangku</strong>
             </Link>
           </div>
