@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import api from "../services/api";
 import { LayoutDashboard, ArrowRightLeft, FolderOpen, Wallet, PiggyBank, ChartNoAxesCombined, FileText, Settings, User, CircleHelp, LogOut, X, Menu, Sun, Moon } from "lucide-react";
 import { formatCurrency } from "../utils/format";
+import logo from "../assets/logo-uangku.png";
 
 const navItems = [
   { label: "Dashboard", icon: LayoutDashboard, path: "/dashboard" },
@@ -124,7 +125,7 @@ function Layout({ children }) {
 
   const handleLogout = () => {
     localStorage.removeItem("token");
-    navigate("/login");
+    navigate("/");
     window.location.reload();
   };
 
@@ -135,8 +136,11 @@ function Layout({ children }) {
       <aside className={`sidebar ${sidebarOpen ? "open" : ""}`}>
         <div className="sidebar-header">
           <div className="brand">
-            <strong>Uangku</strong>
-            <small>Pencatatan Keuangan</small>
+            <img src={logo} alt="Uangku" className="sidebar-logo" />
+            <div className="brand-text">
+              <strong>Uangku</strong>
+              <small>Pencatatan Keuangan</small>
+            </div>
           </div>
           <button className="sidebar-close" onClick={() => setSidebarOpen(false)} type="button" aria-label="Tutup menu">
             <X size={18} strokeWidth={2.5} />

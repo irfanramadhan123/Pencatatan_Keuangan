@@ -1,4 +1,4 @@
-import { ArrowUpRight, ArrowDownRight } from "lucide-react";
+import { TrendingUp, TrendingDown } from "lucide-react";
 import { formatCurrency, formatDate } from "../../utils/format";
 import EmptyState from "../common/EmptyState";
 
@@ -29,7 +29,7 @@ export default function TransactionList({ transactions, onEmptyAction }) {
         <div className="table-row" key={transaction.id}>
           <span className="transaction-name">
             <span className={transaction.type === "pemasukan" ? "income-bg" : "expense-bg"}>
-              {transaction.type === "pemasukan" ? <ArrowUpRight size={21} strokeWidth={2.5} /> : <ArrowDownRight size={21} strokeWidth={2.5} />}
+              {transaction.type === "pemasukan" ? <TrendingUp size={21} strokeWidth={2.5} /> : <TrendingDown size={21} strokeWidth={2.5} />}
             </span>
             {transaction.description || "Transaksi"}
           </span>

@@ -1,11 +1,20 @@
 import { useState, useEffect } from "react";
+import { Sun, Moon } from "lucide-react";
+import logo from "../assets/logo-uangku.png";
 
 function Login({ onLogin }) {
-  const [theme, setTheme] = useState(
-    () => localStorage.getItem("auth_theme") || "dark"
-  );
+  const getInitialTheme = () => {
+    const saved = localStorage.getItem("theme");
+    return saved === "light" ? "light" : "dark";
+  };
+  const [theme, setTheme] = useState(getInitialTheme);
   const [preload, setPreload] = useState(true);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme);
+    localStorage.setItem("theme", theme);
+  }, [theme]);
 
   useEffect(() => {
     const t = requestAnimationFrame(() => setPreload(false));
@@ -31,18 +40,14 @@ function Login({ onLogin }) {
   }, [onLogin]);
 
   const toggleTheme = () => {
-    const next = theme === "dark" ? "light" : "dark";
-    setTheme(next);
-    localStorage.setItem("auth_theme", next);
+    setTheme(theme === "dark" ? "light" : "dark");
   };
 
   const handleGoogle = () => {
     window.location.href = "/api/auth/google";
   };
 
-  const authCardClass = `auth-card theme-${theme}${
-    preload ? " preload" : ""
-  }`;
+  const authCardClass = `auth-card${preload ? " preload" : ""}`;
 
   return (
     <div className="login-page">
@@ -54,16 +59,14 @@ function Login({ onLogin }) {
           aria-label="Ganti tema"
           title={theme === "dark" ? "Mode terang" : "Mode gelap"}
         >
-          {theme === "dark" ? "☀️" : "🌙"}
+          {theme === "dark" ? <Sun size={18} strokeWidth={2.5} /> : <Moon size={18} strokeWidth={2.5} />}
         </button>
 
         {/* Panel kiri - login Google */}
         <section className="auth-left">
           <div className="auth-brand">
-            <span className="auth-logo-dot" />
-            <span className="logo">
-              <span className="candy">Uangku</span>
-            </span>
+            <img src={logo} alt="Uangku" className="auth-logo" />
+            <span className="auth-logo-text">Uangku</span>
           </div>
 
           <div className="auth-left-body">
@@ -96,37 +99,7 @@ function Login({ onLogin }) {
           </div>
         </section>
 
-        {/* Panel kanan - penjelasan Uangku */}
-        <aside className="auth-right">
-          <div className="auth-right-inner">
-            <h2 className="auth-right-title">Kelola uang, raih tenang.</h2>
-            <p className="auth-right-desc">
-              Uangku membantu kamu mencatat setiap rupiah, memantau saldo secara
-              real-time, dan mencapai target tabungan dengan lebih disiplin.
-            </p>
-            <ul className="auth-features">
-              <li>📊 Pantau saldo &amp; transaksi real-time</li>
-              <li>🎯 Atur target tabungan &amp; anggaran</li>
-              <li>🔒 Data keuangan aman di satu tempat</li>
-            </ul>
 
-            <div className="auth-illustration">
-              <div className="auth-avatar">💰</div>
-              <div className="float-card card-balance">
-                <span className="fc-label">Saldo</span>
-                <span className="fc-value">Rp 12.450.000</span>
-              </div>
-              <div className="float-card card-income">
-                <span className="fc-label">Pemasukan</span>
-                <span className="fc-value up">+ Rp 4.200.000</span>
-              </div>
-              <div className="float-card card-expense">
-                <span className="fc-label">Pengeluaran</span>
-                <span className="fc-value down">- Rp 1.800.000</span>
-              </div>
-            </div>
-          </div>
-        </aside>
       </div>
     </div>
   );
