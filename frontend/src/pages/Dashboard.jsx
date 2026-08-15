@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Wallet, ArrowUpRight, ArrowDownRight, Plus } from "lucide-react";
+import { Wallet, TrendingUp, TrendingDown, Plus } from "lucide-react";
 import {
   useDashboardData,
   periods,
@@ -30,14 +30,14 @@ const cardMeta = [
       hf ? "Pemasukan dikurangi pengeluaran" : "Belum ada transaksi",
   },
   {
-    icon: ArrowUpRight,
+    icon: TrendingUp,
     tone: "green",
     label: "Pemasukan",
     helper: () => "Total pemasukan periode ini",
     trendKey: "income",
   },
   {
-    icon: ArrowDownRight,
+    icon: TrendingDown,
     tone: "red",
     label: "Pengeluaran",
     helper: () => "Total pengeluaran periode ini",
@@ -137,6 +137,7 @@ function Dashboard() {
             trend={meta.trendKey ? summaryComparison[meta.trendKey] : undefined}
             showSparkline={!meta.trendKey && !meta.hideSparkline}
             isSaldo={meta.isSaldo}
+            invertDelta={meta.trendKey === "expense"}
           />
         ))}
         <SavingsCard

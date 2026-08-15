@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import api from "../services/api";
 import { formatCurrency } from "../utils/format";
-import { ArrowUpRight, ArrowDownRight, Plus, Trash2, Pencil } from "lucide-react";
+import { TrendingUp, TrendingDown, Plus, Trash2, Pencil } from "lucide-react";
 import TransactionModal from "../components/transactions/TransactionModal";
 
 function Transactions() {
@@ -189,9 +189,9 @@ function Transactions() {
               <div className="report-name">
                 <i className={tx.type === "pemasukan" ? "income-bg" : "expense-bg"} style={{ borderRadius: 10, width: 42, height: 42 }}>
                   {tx.type === "pemasukan" ? (
-                    <ArrowUpRight size={18} strokeWidth={2.5} />
+                    <TrendingUp size={18} strokeWidth={2.5} />
                   ) : (
-                    <ArrowDownRight size={18} strokeWidth={2.5} />
+                    <TrendingDown size={18} strokeWidth={2.5} />
                   )}
                 </i>
                 <div>

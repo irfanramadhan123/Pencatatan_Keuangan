@@ -25,14 +25,13 @@
   --btn-from: #059669;
   --btn-to: #10b981;
   --accent: #10b981;
-  --page-bg: #f5f5f7;
   --right-bg: linear-gradient(135deg, #059669 0%, #10b981 50%, #34d399 100%);
   --toggle-fg: #ffffff;
   --toggle-bg: rgba(255, 255, 255, 0.14);
 }
 
 /* Tema light - menyamai light theme dashboard (#f8fafc / #ffffff) */
-.auth-card.theme-light {
+[data-theme="light"] .auth-card {
   --left-bg: #ffffff;
   --left-fg: #0f172a;
   --left-sub: #64748b;
@@ -43,7 +42,6 @@
   --btn-from: #059669;
   --btn-to: #10b981;
   --accent: #10b981;
-  --page-bg: #f8fafc;
   --right-bg: linear-gradient(135deg, #10b981 0%, #34d399 50%, #6ee7b7 100%);
   --toggle-fg: #0f172a;
   --toggle-bg: rgba(15, 23, 42, 0.08);
@@ -54,7 +52,7 @@
   place-items: center;
   min-height: 100svh;
   padding: 32px;
-  background: var(--page-bg);
+  background: var(--bg);
   font-family: "Plus Jakarta Sans", "Inter", system-ui, sans-serif;
   animation: fadeIn 0.6s ease;
   transition: background 0.4s var(--auth-ease);
@@ -65,14 +63,11 @@
   position: relative;
   display: flex;
   align-items: stretch;
-  width: min(1150px, 96vw);
-  height: 650px;
+  width: min(520px, 96vw);
   background: var(--left-bg);
   border-radius: var(--auth-radius);
   box-shadow: var(--auth-shadow);
   overflow: hidden;
-  perspective: 1500px;
-  transition: flex-direction 0.6s var(--auth-ease);
 }
 
 /* Tombol ganti tema */
@@ -101,10 +96,10 @@
 /* ---------- Panel kiri (form) ---------- */
 .auth-left {
   position: relative;
-  width: 55%;
+  width: 100%;
   display: flex;
   flex-direction: column;
-  padding: 40px 52px;
+  padding: 48px 52px;
   color: var(--left-fg);
   background: var(--left-bg);
   text-align: left;
@@ -117,14 +112,13 @@
   gap: 10px;
 }
 
-.auth-logo-dot {
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--auth-purple-2), var(--auth-pink));
+.auth-logo {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
 }
 
-.logo .candy {
+.auth-logo-text {
   background: linear-gradient(90deg, var(--auth-pink), var(--auth-purple-2));
   background-clip: text;
   -webkit-background-clip: text;
@@ -202,227 +196,6 @@
   display: inline-flex;
 }
 
-/* ---------- Panel kanan (penjelasan) ---------- */
-.auth-right {
-  position: relative;
-  width: 45%;
-  display: flex;
-  align-items: center;
-  padding: 56px;
-  color: #ffffff;
-  background: var(--right-bg);
-  transform-style: preserve-3d;
-  backface-visibility: hidden;
-  will-change: transform;
-  text-align: left;
-}
-
-.auth-right-inner {
-  max-width: 380px;
-  width: 100%;
-}
-
-.auth-right-title {
-  margin: 0 0 14px;
-  font-size: 34px;
-  font-weight: 800;
-  letter-spacing: -0.04em;
-  line-height: 1.1;
-}
-
-.auth-right-desc {
-  margin: 0 0 24px;
-  font-size: 15px;
-  line-height: 1.65;
-  color: rgba(255, 255, 255, 0.9);
-}
-
-.auth-features {
-  margin: 0 0 28px;
-  padding: 0;
-  list-style: none;
-  display: grid;
-  gap: 12px;
-}
-
-.auth-features li {
-  font-size: 14px;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.95);
-}
-
-/* Ilustrasi avatar + floating cards */
-.auth-illustration {
-  position: relative;
-  height: 150px;
-  margin-top: 8px;
-}
-
-.auth-avatar {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 56px;
-  height: 56px;
-  display: grid;
-  place-items: center;
-  font-size: 26px;
-  background: rgba(255, 255, 255, 0.18);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: 16px;
-  backdrop-filter: blur(6px);
-}
-
-.float-card {
-  position: absolute;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  padding: 10px 14px;
-  background: rgba(255, 255, 255, 0.16);
-  border: 1px solid rgba(255, 255, 255, 0.28);
-  border-radius: 14px;
-  backdrop-filter: blur(8px);
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12);
-}
-
-.float-card .fc-label {
-  font-size: 11px;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.8);
-}
-
-.float-card .fc-value {
-  font-size: 15px;
-  font-weight: 800;
-  color: #ffffff;
-}
-
-.fc-value.up {
-  color: #c8f7d4;
-}
-
-.fc-value.down {
-  color: #ffd2e0;
-}
-
-.card-balance {
-  top: 8px;
-  right: 0;
-}
-
-.card-income {
-  bottom: 18px;
-  left: 30%;
-  animation: floaty 4s ease-in-out infinite;
-}
-
-.card-expense {
-  bottom: 0;
-  right: 6%;
-  animation: floaty 4s ease-in-out infinite 1.2s;
-}
-
-@keyframes floaty {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-8px);
-  }
-}
-
-/* ---------- Animasi 3D Code Candy Authentication ----------
-   Transisi simetris dua arah (login <-> daftar):
-   - login -> daftar: card row-reverse, panel geser + rotateY 3D.
-   - daftar -> login: arah kebalikannya, durasi & easing sama. */
-.auth-card.show-signup {
-  flex-direction: row-reverse;
-}
-
-.auth-card.show-signup .auth-right {
-  animation: cc-turn-left 850ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
-}
-
-.auth-card.show-signup .auth-left {
-  animation: cc-turn-right 850ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
-}
-
-.auth-card:not(.show-signup) .auth-right {
-  animation: cc-turn-left-back 850ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
-}
-
-.auth-card:not(.show-signup) .auth-left {
-  animation: cc-turn-right-back 850ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
-}
-
-/* Nonaktifkan animasi panel saat pertama load */
-.auth-card.preload .auth-left,
-.auth-card.preload .auth-right {
-  animation: none;
-}
-
-@keyframes cc-turn-left {
-  0% {
-    transform: translate3d(0, 0, 0) rotateY(0) scale(1);
-    opacity: 1;
-  }
-  50% {
-    transform: translate3d(-24px, 0, 0) rotateY(-4.5deg) scale(0.99);
-    opacity: 0.9;
-  }
-  100% {
-    transform: translate3d(0, 0, 0) rotateY(0) scale(1);
-    opacity: 1;
-  }
-}
-
-@keyframes cc-turn-right {
-  0% {
-    transform: translate3d(0, 0, 0) rotateY(0) scale(1);
-    opacity: 1;
-  }
-  50% {
-    transform: translate3d(24px, 0, 0) rotateY(4.5deg) scale(0.99);
-    opacity: 0.9;
-  }
-  100% {
-    transform: translate3d(0, 0, 0) rotateY(0) scale(1);
-    opacity: 1;
-  }
-}
-
-@keyframes cc-turn-left-back {
-  0% {
-    transform: translate3d(0, 0, 0) rotateY(0) scale(1);
-    opacity: 1;
-  }
-  50% {
-    transform: translate3d(24px, 0, 0) rotateY(4.5deg) scale(0.99);
-    opacity: 0.9;
-  }
-  100% {
-    transform: translate3d(0, 0, 0) rotateY(0) scale(1);
-    opacity: 1;
-  }
-}
-
-@keyframes cc-turn-right-back {
-  0% {
-    transform: translate3d(0, 0, 0) rotateY(0) scale(1);
-    opacity: 1;
-  }
-  50% {
-    transform: translate3d(-24px, 0, 0) rotateY(-4.5deg) scale(0.99);
-    opacity: 0.9;
-  }
-  100% {
-    transform: translate3d(0, 0, 0) rotateY(0) scale(1);
-    opacity: 1;
-  }
-}
-
 /* Sequential form transition: fade-out lalu fade-in (scale 0.98 -> 1) */
 .auth-left-body {
   transition: opacity 0.3s ease, transform 0.3s ease;
@@ -444,36 +217,12 @@
 }
 
 /* ---------- Responsive ---------- */
-@media (max-width: 1024px) {
-  .auth-card {
-    width: min(720px, 96vw);
-    height: auto;
-  }
-  .auth-left,
-  .auth-right {
-    padding: 36px 40px;
-  }
-  .auth-right-title,
-  .auth-title {
-    font-size: 28px;
-  }
-}
-
 @media (max-width: 760px) {
   .login-page {
     padding: 16px;
   }
   .auth-card {
-    flex-direction: column;
     width: min(440px, 94vw);
-    height: auto;
-  }
-  .auth-left,
-  .auth-right {
-    width: 100%;
-  }
-  .auth-right {
-    display: none;
   }
   .auth-left {
     padding: 32px 24px;

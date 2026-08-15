@@ -14,8 +14,11 @@ export default function MetricCard({
   trend,
   showSparkline = true,
   isSaldo,
+  invertDelta = false,
 }) {
   const animatedRef = useAnimatedNumber(value);
+  const trendUp = trend?.direction === "up";
+  const deltaClass = trendUp !== invertDelta ? "up" : "down";
 
   return (
     <article className={`metric-card${trend ? " metric-card-trend" : ""}${isSaldo ? " metric-card-saldo" : ""}`}>
@@ -28,8 +31,8 @@ export default function MetricCard({
       <strong ref={animatedRef}>{formatCurrency(value)}</strong>
       {trend ? (
         <>
-          <span className={`metric-delta ${trend.direction}`}>
-            {trend.direction === "up" ? (
+          <span className={`metric-delta ${deltaClass}`}>
+            {trendUp ? (
               <ArrowUpRight size={21} strokeWidth={3} />
             ) : (
               <ArrowDownRight size={21} strokeWidth={3} />

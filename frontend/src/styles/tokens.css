@@ -2,10 +2,13 @@
   --bg: #0f172a;
   --surface: #1e293b;
   --surface-soft: #334155;
+  --footer-bg: #172236;
   --line: #334155;
   --text: #cbd5e1;
   --text-light: #94a3b8;
   --heading: #f8fafc;
+  --border: var(--line);
+  --text-secondary: var(--text-light);
   --blue-50: #0b2a22;
   --blue-100: #123d31;
   --blue-200: #1d5c49;
@@ -36,10 +39,13 @@
   --bg: #f8fafc;
   --surface: #ffffff;
   --surface-soft: #f1f5f9;
+  --footer-bg: #eef2f8;
   --line: #e2e8f0;
   --text: #64748b;
   --text-light: #94a3b8;
   --heading: #0f172a;
+  --border: var(--line);
+  --text-secondary: var(--text-light);
   --blue-50: #ecfdf5;
   --blue-100: #d1fae5;
   --blue-200: #a7f3d0;

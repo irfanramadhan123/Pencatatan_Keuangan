@@ -69,7 +69,7 @@ function Settings() {
     try {
       await api.delete("/auth/me");
       localStorage.removeItem("token");
-      navigate("/login");
+      navigate("/");
       window.location.reload();
     } catch {
       setMessage("Gagal menghapus akun.");
