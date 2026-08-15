@@ -22,6 +22,9 @@ import {
   Sparkles,
 } from "lucide-react";
 import DashboardPreview from "../components/landing/DashboardPreview";
+import desktopShot from "../assets/ssdahboarddekstop.png";
+import mobileShot from "../assets/ssdashboardmobile.png";
+import logo from "../assets/logo-uangku.png";
 
 const navLinks = [
   { label: "Home", to: "/", href: null },
@@ -176,7 +179,7 @@ function Navbar({ loggedIn }) {
     <header className={`lp-nav${scrolled ? " scrolled" : ""}`}>
       <nav className="lp-nav-inner" aria-label="Navigasi utama">
         <Link to="/" className="lp-logo" onClick={() => setOpen(false)}>
-          <span className="lp-logo-dot" aria-hidden="true" />
+          <img src={logo} alt="Uangku" className="lp-logo-img" />
           <strong>Uangku</strong>
         </Link>
 
@@ -283,7 +286,7 @@ function Hero() {
         </div>
 
         <Reveal className="lp-hero-visual">
-          <DashboardPreview />
+          <DashboardPreview src={desktopShot} />
         </Reveal>
       </div>
     </section>
@@ -358,10 +361,10 @@ function PreviewSection() {
         </Reveal>
         <div className="lp-preview-grid">
           <Reveal>
-            <DashboardPreview />
+            <DashboardPreview src={desktopShot} />
           </Reveal>
           <Reveal delay={120}>
-            <DashboardPreview phone />
+            <DashboardPreview src={mobileShot} phone />
           </Reveal>
         </div>
       </div>
@@ -464,9 +467,9 @@ function Footer() {
     <footer className="lp-footer">
       <div className="lp-container">
         <div className="lp-footer-inner">
-          <div className="lp-footer-brand">
+           <div className="lp-footer-brand">
             <Link to="/" className="lp-logo">
-              <span className="lp-logo-dot" aria-hidden="true" />
+              <img src={logo} alt="Uangku" className="lp-logo-img" />
               <strong>Uangku</strong>
             </Link>
             <p>
@@ -491,7 +494,13 @@ function Footer() {
             <nav className="lp-footer-links" aria-label="Tautan legal">
               <a href="#">Privacy Policy</a>
               <a href="#">Terms</a>
-              <a href="#">Github</a>
+              <a
+                href="https://github.com/irfanramadhan123/Pencatatan_Keuangan"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Github
+              </a>
             </nav>
           </div>
         </div>
