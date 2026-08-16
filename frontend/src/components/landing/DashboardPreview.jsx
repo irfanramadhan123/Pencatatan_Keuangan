@@ -8,7 +8,7 @@ function DashboardPreview({ src, alt = "Preview dashboard Uangku", phone = false
             <i />
             <i />
           </span>
-          <span className="lp-frame-url">app.uangku.dev/dashboard</span>
+          <span className="lp-frame-url">https://uangku.eithez.my.id/dashboard</span>
         </div>
       )}
       <div className="lp-frame-body">
